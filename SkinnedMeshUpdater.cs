@@ -3,49 +3,98 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Assertions;
 using System;
+using UnityEditor;
+//tsubaki https://gist.github.com/tsubaki/ea6ece1cd9a851ff977e#file-skinnedmeshupdater-cs
+
 
 public class SkinnedMeshUpdater : MonoBehaviour
 {
-	[SerializeField]
-	SkinnedMeshRenderer original;
+    private GameObject player;
+    private const string distanceCheck = "DistanceCheck";
+    private int[] LOD; //LOD indexes
+    private int currentLOD; //active LOD
+    private float[] distances; //LOD distance range
 
-	#region UNITYC_CALLBACK
+    [Tooltip("The name of the player gameobject")]
+    public string playerString;
+    [Tooltip("Drag the relevent SkinnedMeshRenderer from the project starting from LOD_0 to LOD_n.")]
+    public SkinnedMeshRenderer[] skinnedMeshRenderers;
+    [Tooltip("Assigned via the Generate Skeletons button, should be updated when a new SkinnedMeshRenderer is added.")]
+    public LODParameters[] newSkeleton_LOD;
+    [Tooltip("Check if you want to update the material with the mesh.")]
+    public bool updateMaterial;
+    [Tooltip("Interval at which distances is calculated [LOD_0 = distanceInterval, LOD_n = distanceInterval * n]")]
+    public float distanceInterval;
+    [Tooltip("How often checks are performed in seconds")]
+    public float invokeRate;
 
-	void Update ()
-	{
-		if (Input.GetKeyDown (KeyCode.Space)) {
-			UpdateMeshRenderer (original);
-		}
-	}
 
-	#if UNITY_EDITOR
-	void OnDrawGizmosSelected ()
-	{
-		var meshrenderer = GetComponentInChildren<SkinnedMeshRenderer> ();
-		Vector3 before = meshrenderer.bones [0].position;
-		for (int i = 0; i < meshrenderer.bones.Length; i++) {
-			Gizmos.DrawLine (meshrenderer.bones [i].position, before);
-			UnityEditor.Handles.Label (meshrenderer.bones [i].transform.position, i.ToString ());
-			before = meshrenderer.bones [i].position;
-		}
-	}
-	#endif
+    private void Start()
+    {
+        player = GameObject.Find(playerString);
+        LOD = new int[skinnedMeshRenderers.Length];
+        distances = new float[skinnedMeshRenderers.Length - 1];
 
-	#endregion
+        //assigns the LOD levels
+        for (int i = 0; i < skinnedMeshRenderers.Length; ++i)
+        {
+            LOD[i] = i;
+        }
+        //assigns rayDistances
+        for (int i = 0; i < distances.Length; ++i)
+        {
+            distances[i] = distanceInterval * (i + 1);
+        }
 
-	public void UpdateMeshRenderer (SkinnedMeshRenderer newMeshRenderer)
-	{
-		// update mesh
-		var meshrenderer = GetComponentInChildren<SkinnedMeshRenderer> ();
-		meshrenderer.sharedMesh = newMeshRenderer.sharedMesh;
+        currentLOD = LOD[0];
+    }
 
-		Transform[] childrens = transform.GetComponentsInChildren<Transform> (true);
+    private void Update()
+    {
+        if (!IsInvoking(distanceCheck))
+            Invoke(distanceCheck, invokeRate);
+    }
 
-		// sort bones.
-		Transform[] bones = new Transform[newMeshRenderer.bones.Length];
-		for (int boneOrder = 0; boneOrder < newMeshRenderer.bones.Length; boneOrder++) {
-			bones [boneOrder] = Array.Find<Transform> (childrens, c => c.name == newMeshRenderer.bones [boneOrder].name);
-		}
-		meshrenderer.bones = bones;
-	}
+    void DistanceCheck()
+    {
+        //checks the distance from enemy to player ignoring all other layers to determine LOD
+        if (player != null)
+        {
+            //only determines n - 1 LOD levels where if the ray does not find the player it will default to the 
+            //highest LOD level
+            for (int i = 0; i < distances.Length; ++i)
+            {
+                if (Vector3.Distance(player.transform.position, transform.position) < distances[i])
+                {
+                    if (!currentLOD.Equals(LOD[i])) //will only update if it is not already set 
+                    {
+                        currentLOD = LOD[i];
+                        UpdateMeshRenderer(currentLOD);
+                    }
+
+                    return;
+                }
+            }
+            //defaults to the highest LOD level
+            if (!currentLOD.Equals(LOD[LOD.Length - 1]))
+            {
+                currentLOD = LOD[LOD.Length - 1];
+                UpdateMeshRenderer(currentLOD);
+            }
+        }
+    }
+
+    public void UpdateMeshRenderer(int lod)
+    {
+        // update mesh
+        SkinnedMeshRenderer meshrenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+
+        meshrenderer.sharedMesh = skinnedMeshRenderers[lod].sharedMesh;
+
+        if (updateMaterial)
+            meshrenderer.sharedMaterial = skinnedMeshRenderers[lod].sharedMaterial;
+
+        // update bones
+        meshrenderer.bones = newSkeleton_LOD[lod].bones;
+    }
 }
