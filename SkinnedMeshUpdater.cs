@@ -1,11 +1,4 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.Assertions;
-using System;
-using UnityEditor;
-//tsubaki https://gist.github.com/tsubaki/ea6ece1cd9a851ff977e#file-skinnedmeshupdater-cs
-
 
 public class SkinnedMeshUpdater : MonoBehaviour
 {
@@ -84,6 +77,7 @@ public class SkinnedMeshUpdater : MonoBehaviour
         }
     }
 
+    //tsubaki https://gist.github.com/tsubaki/ea6ece1cd9a851ff977e#file-skinnedmeshupdater-cs
     public void UpdateMeshRenderer(int lod)
     {
         // update mesh
