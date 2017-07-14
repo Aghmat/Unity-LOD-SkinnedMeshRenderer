@@ -4,6 +4,7 @@ public class SkinnedMeshUpdater : MonoBehaviour
 {
     private GameObject player;
     private const string distanceCheck = "DistanceCheck";
+    private const int minInvoke = 0.0001f;
     private int[] LOD; //LOD indexes
     private int currentLOD; //active LOD
     private float[] distances; //LOD distance range
@@ -46,8 +47,17 @@ public class SkinnedMeshUpdater : MonoBehaviour
 
     private void Update()
     {
-        if (!IsInvoking(distanceCheck))
-            Invoke(distanceCheck, invokeRate);
+        if (invokeRate > 0)
+        {
+            if (!IsInvoking(distanceCheck))
+                Invoke(distanceCheck, invokeRate);
+        }
+        else
+        {
+            if (!IsInvoking(distanceCheck))
+            	Invoke(distanceCheck, minInvoke);
+        }
+        
     }
 
     void DistanceCheck()
