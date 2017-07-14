@@ -8,7 +8,7 @@ public class SkinnedMeshUpdater : MonoBehaviour
     private int currentLOD; //active LOD
     private float[] distances; //LOD distance range
 
-    [Tooltip("The name of the player gameobject")]
+    [Tooltip("The name of the player GameObject.")]
     public string playerString;
     [Tooltip("Drag the relevent SkinnedMeshRenderer from the project starting from LOD_0 to LOD_n.")]
     public SkinnedMeshRenderer[] skinnedMeshRenderers;
@@ -77,7 +77,7 @@ public class SkinnedMeshUpdater : MonoBehaviour
         }
     }
 
-    //tsubaki https://gist.github.com/tsubaki/ea6ece1cd9a851ff977e#file-skinnedmeshupdater-cs
+    //tsubaki @ https://gist.github.com/tsubaki/ea6ece1cd9a851ff977e#file-skinnedmeshupdater-cs
     public void UpdateMeshRenderer(int lod)
     {
         // update mesh
