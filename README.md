@@ -10,3 +10,9 @@ A LOD (Level of detail) implementation in Unity 5 for SkinnedMeshRenderers
 
 ## Requirements
 * Pre-decimated models (bones may differ)
+
+## Demo
+* In the DEMO a folder an example scene exists, extract it to an existing project to view
+
+### TODO
+* Implement crossfade to ensure less noticable transitions
