@@ -17,11 +17,13 @@ public class SkinnedMeshUpdatorEditor : Editor
 
             for (int i = 0; i < skinnedMeshUpdater.skinnedMeshRenderers.Length; ++i)
             {
-                skinnedMeshUpdater.newSkeleton_LOD[i].bones = SortedBones(skinnedMeshUpdater.skinnedMeshRenderers[i], skinnedMeshUpdater.gameObject);
+                skinnedMeshUpdater.newSkeleton_LOD[i].bones = SortedBones(skinnedMeshUpdater.skinnedMeshRenderers[i], 
+                                                                          skinnedMeshUpdater.gameObject);
             }
         }
     }
 
+    //tsubaki @ https://gist.github.com/tsubaki/ea6ece1cd9a851ff977e#file-skinnedmeshupdater-cs
     public Transform[] SortedBones(SkinnedMeshRenderer newMeshRenderer, GameObject go)
     {
         Transform[] childrenTransforms = go.transform.GetComponentsInChildren<Transform>(true);
