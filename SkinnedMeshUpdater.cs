@@ -10,6 +10,8 @@ public class SkinnedMeshUpdater : MonoBehaviour
 
     [Tooltip("The name of the player GameObject.")]
     public string playerString;
+    [Tooltip("The SkinnedMeshRenderer of the model.")]
+    public SkinnedMeshRenderer skinnedMeshRenderer;
     [Tooltip("Drag the relevent SkinnedMeshRenderer from the project starting from LOD_0 to LOD_n.")]
     public SkinnedMeshRenderer[] skinnedMeshRenderers;
     [Tooltip("Assigned via the Generate Skeletons button, should be updated when a new SkinnedMeshRenderer is added.")]
@@ -81,7 +83,7 @@ public class SkinnedMeshUpdater : MonoBehaviour
     public void UpdateMeshRenderer(int lod)
     {
         // update mesh
-        SkinnedMeshRenderer meshrenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        SkinnedMeshRenderer meshrenderer = skinnedMeshRenderer.GetComponent<SkinnedMeshRenderer>();
 
         meshrenderer.sharedMesh = skinnedMeshRenderers[lod].sharedMesh;
 
